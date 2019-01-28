@@ -1,0 +1,574 @@
+mysql> source /Users/yliepieshkov/Yevgen_dev/my_sql/yliepieshkov_assignment4.sql
+--------------
+/* QUERY 1 */
+
+USE library
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+DROP TABLE IF EXISTS staff
+--------------
+
+Query OK, 0 rows affected (0.06 sec)
+
+--------------
+DROP TABLE IF EXISTS computer
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+
+--------------
+DROP TABLE IF EXISTS computer_staff
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+DROP TABLE IF EXISTS branch_staff
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+
+--------------
+CREATE TABLE staff (
+	staff_id INT(6) NOT NULL,
+    fname VARCHAR(15) NOT NULL,
+    lname VARCHAR(15) NOT NULL,
+    phone VARCHAR(15),
+    email VARCHAR(30),
+    PRIMARY KEY (staff_id)
+) ENGINE = INNODB
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+CREATE TABLE computer (
+	serial_number INT(7) NOT NULL, 
+    make VARCHAR(15) NOT NULL, 
+    model VARCHAR(20) NOT NULL,
+    processor_type VARCHAR(20),
+    speed DECIMAL(4,2),
+    main_memory VARCHAR(20),
+    disk_size VARCHAR(20),
+	PRIMARY KEY (serial_number)
+)ENGINE = INNODB
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+
+--------------
+CREATE TABLE computer_staff (
+	serial_number INT(7) NOT NULL,
+    staff_id INT(6) NOT NULL,
+    date_assigned DATE,
+    PRIMARY KEY (serial_number, staff_id),
+    FOREIGN KEY (serial_number) REFERENCES computer (serial_number),
+    FOREIGN KEY (staff_id) REFERENCES staff (staff_id)
+) ENGINE = INNODB
+--------------
+
+Query OK, 0 rows affected (0.02 sec)
+
+--------------
+CREATE TABLE branch_staff (
+	branch_id INT(5) NOT NULL,
+	contact VARCHAR(15),
+    staff_id INT(6) NOT NULL,
+    PRIMARY KEY (branch_id, staff_id),
+    FOREIGN KEY (staff_id) REFERENCES staff (staff_id)
+)ENGINE = INNODB
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+
+--------------
+/* QUERY 2 */
+
+USE library
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+INSERT INTO staff VALUES(
+	10001,'Stuart', 'Anne', '206-527-0010', 'Anne.Stuart@libray.com')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO staff VALUES(
+	10002,'Stuart', 'George', '206-527-0011', 'George.Stuart@library.com')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO staff VALUES(
+	10004,'Stuart', 'Mary', '206-527-0012', 'Mary.Stuart@library.com')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO staff VALUES(
+	10005,'Orange', 'William', '206-527-0013', 'William.Orange@library.com')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO staff VALUES(
+	10006,'Matt', 'John', '206-527-0014', 'John.Griffith@library.com')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+    INSERT INTO staff VALUES(
+	10007,'Stuart', 'Jack', '206-527-0012', 'Jack.Stuart@library.com')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO staff VALUES(
+	10008,'Orange', 'Chris', '206-527-0013', 'Chris.Orange@library.com')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO staff VALUES(
+	10009,'Alexander', 'John', '206-527-0014', 'John.Alexanderh@library.com')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+    
+    INSERT INTO staff VALUES(
+	10010,'William', 'Bradley', '206-527-0013', 'Bradley.William@library.com')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO staff VALUES(
+	10011,'Neil', ' Simon', '206-527-0014', ' Simon.Neilh@library.com')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+	
+INSERT INTO computer VALUES(
+		9871234, 'HP', 'Pavilion 500-210qe', 'Intel i5-4530', 3.00,
+		'6.0 GBytes', '1.0 TBytes')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer VALUES(
+		9871245, 'HP', 'Pavilion 500-210qe', 'Intel i5-4530', 3.00,
+		'6.0 GBytes', '1.0 TBytes')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer VALUES(
+		9871256, 'HP', 'Pavilion 500-210qe', 'Intel i5-4530', 3.00,
+		'6.0 GBytes', '1.0 TBytes')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer VALUES(
+		9871267, 'HP', 'Pavilion 500-210qe', 'Intel i5-4530', 3.00,
+		'6.0 GBytes', '1.0 TBytes')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer VALUES(
+		9871278, 'HP', 'Pavilion 500-210qe', 'Intel i5-4530', 3.00,
+		'6.0 GBytes', '1.0 TBytes')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer VALUES(
+		9871289, 'HP', 'Pavilion 500-210qe', 'Intel i5-4530', 3.00,
+		'6.0 GBytes', '1.0 TBytes')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer VALUES(
+		6541001, 'Dell', 'OptiPlex 9020', 'Intel i7-4770', 3.40,
+		'8.0 GBytes', '1.0 TBytes')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer VALUES(
+		6541002, 'Dell', 'OptiPlex 9020', 'Intel i7-4770', 3.40,
+		'8.0 GBytes', '1.0 TBytes')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer VALUES(
+		6541003, 'Dell', 'OptiPlex 9020', 'Intel i7-4770', 3.40,
+		'8.0 GBytes', '1.0 TBytes')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer VALUES(
+		6541004, 'Dell', 'OptiPlex 9020', 'Intel i7-4770', 3.40,
+		'8.0 GBytes', '1.0 TBytes')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer VALUES(
+		6541005, 'Dell', 'OptiPlex 9020', 'Intel i7-4770', 3.40,
+		'8.0 GBytes', '1.0 TBytes')
+--------------
+
+Query OK, 1 row affected (0.01 sec)
+
+--------------
+INSERT INTO computer VALUES(
+		6541006, 'Dell', 'OptiPlex 9020', 'Intel i7-4770', 3.40,
+		'8.0 GBytes', '1.0 TBytes')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+		
+INSERT INTO computer_staff(serial_number, staff_id, date_assigned)
+		VALUES(9871256, 10006, '2015-09-14')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer_staff (serial_number, staff_id, date_assigned)
+		VALUES(9871267, 10001, '2015-09-14')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer_staff(serial_number, staff_id, date_assigned)
+		VALUES(9871278, 10002, '2015-09-14')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer_staff(serial_number, staff_id, date_assigned)
+	    VALUES(9871289, 10004, '2015-09-21')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer_staff(serial_number, staff_id, date_assigned)
+		VALUES(6541001, 10005, '2015-10-14')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer_staff (serial_number, staff_id, date_assigned)
+		VALUES(6541002, 10007, '2015-10-14')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer_staff(serial_number, staff_id, date_assigned)
+		VALUES(6541003, 10008, '2015-10-21')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer_staff (serial_number, staff_id, date_assigned)
+		VALUES(6541004, 10009, '2015-10-14')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer_staff(serial_number, staff_id, date_assigned)
+		VALUES(9871234, 10011, '2015-11-14')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO computer_staff (serial_number, staff_id, date_assigned)
+		VALUES(9871245, 10010, '2015-11-14')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+		
+		
+INSERT INTO branch_staff (branch_id, staff_id, contact) VALUES(91234, 10001, '510-714-8321')
+--------------
+
+Query OK, 1 row affected (0.01 sec)
+
+--------------
+INSERT INTO branch_staff (branch_id, staff_id, contact) VALUES(92345 , 10010, '510-987-0000 ')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO branch_staff (branch_id, staff_id, contact) VALUES(93456 , 10009, '510-555-9743')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO branch_staff (branch_id, staff_id, contact) VALUES(94567  , 10008, '510-666-9743 ')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO branch_staff (branch_id, staff_id, contact) VALUES(94567, 10007, '510-645-9743 ')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO branch_staff (branch_id, staff_id, contact) VALUES(95678 , 10010, '8510-111-9743 ')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO branch_staff (branch_id, staff_id, contact) VALUES(96789  , 10011, '510-999-9743 ')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+/* QUERY 3 */
+
+SELECT
+		serial_number,
+        model
+FROM computer
+--------------
+
++---------------+--------------------+
+| serial_number | model              |
++---------------+--------------------+
+|       6541001 | OptiPlex 9020      |
+|       6541002 | OptiPlex 9020      |
+|       6541003 | OptiPlex 9020      |
+|       6541004 | OptiPlex 9020      |
+|       6541005 | OptiPlex 9020      |
+|       6541006 | OptiPlex 9020      |
+|       9871234 | Pavilion 500-210qe |
+|       9871245 | Pavilion 500-210qe |
+|       9871256 | Pavilion 500-210qe |
+|       9871267 | Pavilion 500-210qe |
+|       9871278 | Pavilion 500-210qe |
+|       9871289 | Pavilion 500-210qe |
++---------------+--------------------+
+12 rows in set (0.01 sec)
+
+--------------
+/*QUERY 4.1*/
+
+ALTER TABLE books
+ADD date_added DATETIME
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+/* QUERY 4.2*/
+
+DESC books
+--------------
+
++-------------+--------------+------+-----+---------+-------+
+| Field       | Type         | Null | Key | Default | Extra |
++-------------+--------------+------+-----+---------+-------+
+| isbn        | varchar(10)  | NO   | PRI | NULL    |       |
+| pub_date    | date         | YES  |     | NULL    |       |
+| title       | varchar(130) | YES  |     | NULL    |       |
+| Pub_id      | int(11)      | YES  | MUL | NULL    |       |
+| list_price  | decimal(5,2) | YES  |     | NULL    |       |
+| category_id | int(10)      | YES  | MUL | NULL    |       |
+| date_added  | datetime     | YES  |     | NULL    |       |
++-------------+--------------+------+-----+---------+-------+
+7 rows in set (0.00 sec)
+
+--------------
+/* QUERY 5.1 */
+
+ALTER TABLE staff 
+MODIFY lname VARCHAR(30) NOT NULL
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+/* QUERY 5.2 */
+
+DESC staff
+--------------
+
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| staff_id | int(6)      | NO   | PRI | NULL    |       |
+| fname    | varchar(15) | NO   |     | NULL    |       |
+| lname    | varchar(30) | NO   |     | NULL    |       |
+| phone    | varchar(15) | YES  |     | NULL    |       |
+| email    | varchar(30) | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+--------------
+/* QUERY 6 */
+
+ALTER TABLE staff
+ADD salary DECIMAL(7,2)
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+/* QUERY 7 */
+
+SELECT
+	serial_number,
+    staff_id,
+    date_assigned 
+FROM computer_staff
+--------------
+
++---------------+----------+---------------+
+| serial_number | staff_id | date_assigned |
++---------------+----------+---------------+
+|       6541001 |    10005 | 2015-10-14    |
+|       6541002 |    10007 | 2015-10-14    |
+|       6541003 |    10008 | 2015-10-21    |
+|       6541004 |    10009 | 2015-10-14    |
+|       9871234 |    10011 | 2015-11-14    |
+|       9871245 |    10010 | 2015-11-14    |
+|       9871256 |    10006 | 2015-09-14    |
+|       9871267 |    10001 | 2015-09-14    |
+|       9871278 |    10002 | 2015-09-14    |
+|       9871289 |    10004 | 2015-09-21    |
++---------------+----------+---------------+
+10 rows in set (0.00 sec)
+
+--------------
+/* QUERY 8 */
+
+ALTER TABLE books
+DROP date_added
+--------------
+
+Query OK, 0 rows affected (0.15 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+/* QUERY 9.1 */
+
+CREATE TABLE books_archive LIKE books
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+
+--------------
+/* QUERY 9.2 */
+
+SHOW TABLES
+--------------
+
++-------------------+
+| Tables_in_library |
++-------------------+
+| author            |
+| bookauthor        |
+| bookcopies        |
+| bookloans         |
+| books             |
+| books_archive     |
+| borrower          |
+| branch            |
+| branch_staff      |
+| categories        |
+| computer          |
+| computer_staff    |
+| publisher         |
+| staff             |
++-------------------+
+14 rows in set (0.00 sec)
+
+--------------
+/* QUERY 10.1 */
+
+DROP TABLE books_archive
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+
+--------------
+/* QUERY 10.2 */
+
+SHOW TABLES
+--------------
+
++-------------------+
+| Tables_in_library |
++-------------------+
+| author            |
+| bookauthor        |
+| bookcopies        |
+| bookloans         |
+| books             |
+| borrower          |
+| branch            |
+| branch_staff      |
+| categories        |
+| computer          |
+| computer_staff    |
+| publisher         |
+| staff             |
++-------------------+
+13 rows in set (0.00 sec)
+
+mysql> notee

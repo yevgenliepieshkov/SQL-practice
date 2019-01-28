@@ -1,0 +1,286 @@
+mysql> source /Users/yliepieshkov/Yevgen_dev/my_sql/yliepieshkov_assignment8.sql
+Database changed
+--------------
+/* QUERY 1 */
+
+CREATE VIEW customer_address
+AS SELECT 
+	c.customer_id,
+    email_address,
+    last_name,
+    first_name,
+    line1 AS ship_line1,
+    line2 AS ship_line2,
+    city AS ship_city,
+    state AS ship_state,
+    zip_code AS ship_zip
+FROM customer c 
+JOIN address a
+ON c.customer_id = a.customer_id
+--------------
+
+Query OK, 0 rows affected (0.07 sec)
+
+--------------
+SELECT 
+	customer_id,
+    last_name,
+    first_name,
+    ship_city,
+    ship_state
+FROM customer_address
+--------------
+
++-------------+-----------+------------+----------------+------------+
+| customer_id | last_name | first_name | ship_city      | ship_state |
++-------------+-----------+------------+----------------+------------+
+|       11119 | Sherwood  | Allan      | Paramus        | NJ         |
+|       11119 | Sherwood  | Allan      | Woodcliff Lake | NJ         |
+|       22229 | Zimmer    | Barry      | Omaha          | NE         |
+|       33339 | Brown     | Christine  | Beaverton      | OR         |
+|       44449 | Goldstein | David      | San Francisco  | CA         |
+|       44449 | Goldstein | David      | San Francisco  | CA         |
+|       55559 | Valentino | Erin       | Fresno         | CA         |
+|       66669 | Wilson    | Frank Lee  | Denver         | CO         |
+|       77779 | Hernandez | Gary       | New York       | NY         |
+|       77779 | Hernandez | Gary       | New York       | NY         |
+|       88889 | Esway     | Heather    | Los Angeles    | CA         |
+|       88889 | Esway     | Heather    | Los Angeles    | CA         |
++-------------+-----------+------------+----------------+------------+
+12 rows in set (0.00 sec)
+
+--------------
+/* QUERY 2 */
+
+UPDATE 
+	customer_address
+SET ship_line1 = '1990 Westwood Blvd.'
+WHERE customer_id = 11119
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+Rows matched: 2  Changed: 0  Warnings: 0
+
+--------------
+/* QUERY 3 */
+
+CREATE VIEW product_summary (product_id, order_count, order_total)
+AS SELECT product_id, SUM(quantity), SUM(item_price * quantity)
+FROM orderitems
+GROUP BY product_id
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+SELECT product_id, order_count, order_total from product_summary
+--------------
+
++------------+-------------+-------------+
+| product_id | order_count | order_total |
++------------+-------------+-------------+
+|       1234 |           3 |     2997.00 |
+|       2234 |           3 |     3597.00 |
+|       3234 |           1 |     2517.00 |
+|       4234 |           1 |      989.99 |
+|       5234 |           3 |     3897.00 |
+|       6234 |           1 |     1415.00 |
+|       7234 |           1 |       99.99 |
+|       9234 |           1 |       14.99 |
+|      10234 |           3 |      149.97 |
+|      11234 |           1 |       19.95 |
+|      13234 |           1 |       13.95 |
+|      14234 |           1 |       49.99 |
+|      15234 |           1 |       25.99 |
+|      16234 |           1 |      599.00 |
+|      18234 |           1 |      200.99 |
+|      19234 |           1 |      500.99 |
++------------+-------------+-------------+
+16 rows in set (0.00 sec)
+
+--------------
+/* QUERY 4 */
+
+CREATE VIEW cheap_products
+AS SELECT *
+FROM product
+WHERE list_price < 40
+WITH CHECK OPTION
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+SELECT * FROM cheap_products
+--------------
+
++------------+-------------+--------------+------------------+---------------------------------+------------+------------------+---------------------+-----------+
+| product_id | category_id | product_code | product_name     | description                     | list_price | discount_percent | date_added          | vendor_id |
++------------+-------------+--------------+------------------+---------------------------------+------------+------------------+---------------------+-----------+
+|       9234 |          51 | video1234    | 2412: The Return | Aliens return                   |      14.99 |            30.00 | 2015-07-30 12:46:40 |         5 |
+|      11234 |          41 | book9907     | Modern Science   | A description of modern science |      19.95 |            20.00 | 2014-10-30 09:32:40 |         5 |
+|      12234 |          41 | book6789     | Chemistry        | Introduction to Chemistry       |      30.00 |            20.00 | 2013-10-30 09:32:40 |         5 |
+|      13234 |          31 | DVD12356     | Space Force 9    | Adventures of heroes            |      13.95 |            20.00 | 2012-10-30 10:32:50 |         9 |
+|      15234 |          31 | DVD8779      | Supernova        | A star explodes                 |      25.99 |            15.00 | 2011-10-30 10:32:40 |         5 |
++------------+-------------+--------------+------------------+---------------------------------+------------+------------------+---------------------+-----------+
+5 rows in set (0.00 sec)
+
+--------------
+/* QUERY 5 */
+
+INSERT INTO cheap_products
+VALUES (17888, 41, 'book db', 'Fundamental of Database Systems', 
+				'Fundamental of Database Systems Elmasri', 45.99, 20.00,
+                '2015-06-01 11:12:59', 2)
+--------------
+
+ERROR 1369 (HY000): CHECK OPTION failed 'bookstore.cheap_products'
+--------------
+                
+SELECT * FROM cheap_products
+--------------
+
++------------+-------------+--------------+------------------+---------------------------------+------------+------------------+---------------------+-----------+
+| product_id | category_id | product_code | product_name     | description                     | list_price | discount_percent | date_added          | vendor_id |
++------------+-------------+--------------+------------------+---------------------------------+------------+------------------+---------------------+-----------+
+|       9234 |          51 | video1234    | 2412: The Return | Aliens return                   |      14.99 |            30.00 | 2015-07-30 12:46:40 |         5 |
+|      11234 |          41 | book9907     | Modern Science   | A description of modern science |      19.95 |            20.00 | 2014-10-30 09:32:40 |         5 |
+|      12234 |          41 | book6789     | Chemistry        | Introduction to Chemistry       |      30.00 |            20.00 | 2013-10-30 09:32:40 |         5 |
+|      13234 |          31 | DVD12356     | Space Force 9    | Adventures of heroes            |      13.95 |            20.00 | 2012-10-30 10:32:50 |         9 |
+|      15234 |          31 | DVD8779      | Supernova        | A star explodes                 |      25.99 |            15.00 | 2011-10-30 10:32:40 |         5 |
++------------+-------------+--------------+------------------+---------------------------------+------------+------------------+---------------------+-----------+
+5 rows in set (0.01 sec)
+
+--------------
+/* QUERY 6 */
+
+CREATE VIEW contact (first_name, phone)
+AS SELECT DISTINCT contact_fname, phone
+FROM vendor
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+SELECT * FROM contact
+--------------
+
++------------+--------------+
+| first_name | phone        |
++------------+--------------+
+| Anne       | 206-325-6755 |
+| Ken        | 206-325-7866 |
+| Sally      | 206-325-8977 |
+| Andrew     | 425-746-5433 |
+| Denise     | 425-746-4322 |
+| Mark       | 206-325-9088 |
+| Denesha    | 425-635-7566 |
+| Chris      | 425-635-9788 |
+| Fred       | 415-422-2121 |
+| Patty      | 415-422-3232 |
++------------+--------------+
+10 rows in set (0.00 sec)
+
+--------------
+/* QUERY 7 */
+
+CREATE VIEW order_items (order_id, order_date,tax_amount, ship_date,
+												item_price, discount_amount, final_price,
+                                                quantity, item_total, product_name)
+AS SELECT 
+	o.order_id,
+    o.order_date,
+    o.tax_amount,
+    o.ship_date,
+    oi.item_price,
+    oi.discount_amount,
+    (oi.item_price - oi.discount_amount) final_price,
+    oi.quantity,
+    (oi.item_price - oi.discount_amount) * oi.quantity item_total,
+    p.product_name
+FROM orders o
+JOIN orderitems oi
+ON o.order_id = oi.order_id
+JOIN product p
+ON oi.product_id = p.product_id
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+SELECT * from order_items
+--------------
+
++----------+---------------------+------------+---------------------+------------+-----------------+-------------+----------+------------+------------------------+
+| order_id | order_date          | tax_amount | ship_date           | item_price | discount_amount | final_price | quantity | item_total | product_name           |
++----------+---------------------+------------+---------------------+------------+-----------------+-------------+----------+------------+------------------------+
+|        1 | 2015-03-28 09:40:28 |      32.32 | 2015-03-30 15:32:51 |    1199.00 |          359.70 |      839.30 |        1 |     839.30 | Lenovo H50 Desktop     |
+|        1 | 2015-03-28 09:40:28 |      32.32 | 2015-03-30 15:32:51 |      49.99 |            7.49 |       42.50 |        2 |      85.00 | Z Files                |
+|        2 | 2015-03-28 11:23:20 |       0.00 | 2015-03-29 12:52:14 |     989.99 |          197.80 |      792.19 |        1 |     792.19 | Toshiba Satellite S55T |
+|        2 | 2015-03-28 11:23:20 |       0.00 | 2015-03-29 12:52:14 |      19.95 |            3.99 |       15.96 |        1 |      15.96 | Modern Science         |
+|        2 | 2015-03-28 11:23:20 |       0.00 | 2015-03-29 12:52:14 |    1415.00 |          551.46 |      863.54 |        1 |     863.54 | Dell Inspiron 17 5000  |
+|        3 | 2015-03-29 09:44:58 |      89.92 | 2015-03-31 09:11:41 |    2517.00 |         1308.84 |     1208.16 |        1 |    1208.16 | HP Envy 750qe Desktop  |
+|        3 | 2015-03-29 09:44:58 |      89.92 | 2015-03-31 09:11:41 |     999.00 |          199.87 |      799.13 |        1 |     799.13 | Dell XPS 8700          |
+|        3 | 2015-03-29 09:44:58 |      89.92 | 2015-03-31 09:11:41 |    1299.00 |            0.00 |     1299.00 |        1 |    1299.00 | HP Pavilion 15t Star   |
+|        4 | 2015-03-30 15:22:31 |       0.00 | 2015-04-03 16:32:21 |    1199.00 |          359.70 |      839.30 |        2 |    1678.60 | Lenovo H50 Desktop     |
+|        4 | 2015-03-30 15:22:31 |       0.00 | 2015-04-03 16:32:21 |      13.95 |            2.79 |       11.16 |        1 |      11.16 | Space Force 9          |
+|        5 | 2015-03-31 05:43:11 |       0.00 | NULL                |    1299.00 |            0.00 |     1299.00 |        1 |    1299.00 | HP Pavilion 15t Star   |
+|        6 | 2015-03-31 18:37:22 |       0.00 | NULL                |    1299.00 |            0.00 |     1299.00 |        1 |    1299.00 | HP Pavilion 15t Star   |
+|        7 | 2015-04-01 23:11:12 |       0.00 | 2015-04-03 10:21:35 |     999.00 |          199.87 |      799.13 |        1 |     799.13 | Dell XPS 8700          |
+|        7 | 2015-04-01 23:11:12 |       0.00 | 2015-04-03 10:21:35 |      99.99 |           29.97 |       70.02 |        1 |      70.02 | Classical Music        |
+|        7 | 2015-04-01 23:11:12 |       0.00 | 2015-04-03 10:21:35 |      14.99 |            4.20 |       10.79 |        1 |      10.79 | 2412: The Return       |
+|        7 | 2015-04-01 23:11:12 |       0.00 | 2015-04-03 10:21:35 |     500.99 |           75.18 |      425.81 |        1 |     425.81 | HP LaserJet Pro        |
+|        8 | 2015-04-02 11:26:38 |       0.00 | NULL                |      49.99 |            7.49 |       42.50 |        1 |      42.50 | Z Files                |
+|        9 | 2015-04-03 12:22:31 |       0.00 | NULL                |     999.00 |          199.87 |      799.13 |        1 |     799.13 | Dell XPS 8700          |
+|        9 | 2015-04-03 12:22:31 |       0.00 | NULL                |      49.99 |            9.99 |       40.00 |        1 |      40.00 | From Another Planet    |
+|       10 | 2015-05-03 12:22:31 |       0.00 | NULL                |      25.99 |            3.89 |       22.10 |        1 |      22.10 | Supernova              |
+|       10 | 2015-05-03 12:22:31 |       0.00 | NULL                |     599.00 |           24.00 |      575.00 |        1 |     575.00 | HP Color LaserJet      |
+|       11 | 2015-06-03 12:22:31 |       0.00 | NULL                |     200.99 |           40.00 |      160.99 |        1 |     160.99 | HP LaserJet Pro        |
++----------+---------------------+------------+---------------------+------------+-----------------+-------------+----------+------------+------------------------+
+22 rows in set (0.00 sec)
+
+--------------
+/* QUERY 8 */
+
+CREATE VIEW reorder_info
+AS SELECT
+	p.product_id,
+    p.product_name,
+    v.contact_fname,
+    v.phone
+FROM product p
+JOIN vendor v
+ON p.vendor_id = v.vendor_id
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+SELECT * FROM reorder_info
+--------------
+
++------------+------------------------+---------------+--------------+
+| product_id | product_name           | contact_fname | phone        |
++------------+------------------------+---------------+--------------+
+|       1234 | Dell XPS 8700          | Ken           | 206-325-7866 |
+|       2234 | Lenovo H50 Desktop     | Ken           | 206-325-7866 |
+|       3234 | HP Envy 750qe Desktop  | Ken           | 206-325-7866 |
+|       4234 | Toshiba Satellite S55T | Ken           | 206-325-7866 |
+|       5234 | HP Pavilion 15t Star   | Sally         | 206-325-8977 |
+|       6234 | Dell Inspiron 17 5000  | Ken           | 206-325-7866 |
+|       7234 | Classical Music        | Sally         | 206-325-8977 |
+|       8234 | Pop 3                  | Denise        | 425-746-4322 |
+|       9234 | 2412: The Return       | Denise        | 425-746-4322 |
+|      10234 | Z Files                | Sally         | 206-325-8977 |
+|      11234 | Modern Science         | Denise        | 425-746-4322 |
+|      12234 | Chemistry              | Denise        | 425-746-4322 |
+|      13234 | Space Force 9          | Fred          | 415-422-2121 |
+|      14234 | From Another Planet    | Fred          | 415-422-2121 |
+|      15234 | Supernova              | Denise        | 425-746-4322 |
+|      16234 | HP Color LaserJet      | Denise        | 425-746-4322 |
+|      18234 | HP LaserJet Pro        | Denise        | 425-746-4322 |
+|      19234 | HP LaserJet Pro        | Denise        | 425-746-4322 |
++------------+------------------------+---------------+--------------+
+18 rows in set (0.00 sec)
+
+mysql> notee;

@@ -1,0 +1,350 @@
+mysql> source /Users/yliepieshkov/Yevgen_dev/my_sql/yliepieshkov_final_part2.sql
+--------------
+/*QUERY 0*/
+USE university
+--------------
+
+ERROR 2006 (HY000): MySQL server has gone away
+No connection. Trying to reconnect...
+Connection id:    722
+Current database: university
+
+Query OK, 0 rows affected (0.03 sec)
+
+--------------
+/*QUERY 1*/
+SELECT 
+	s.course_id,
+    s.section_id,
+    s.term_id
+FROM section s
+JOIN term t
+ON s.term_id = t.term_id
+WHERE t.term_desc LIKE 'FALL 2017'
+--------------
+
++-----------+------------+---------+
+| course_id | section_id | term_id |
++-----------+------------+---------+
+| AC101     |       1104 | FL17    |
+| CIS253    |       1210 | FL17    |
+| EN100     |       1311 | FL17    |
++-----------+------------+---------+
+3 rows in set (0.00 sec)
+
+--------------
+/*QUERY 2.1*/
+ALTER TABLE course
+MODIFY title VARCHAR(50)
+--------------
+
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+--------------
+/*QUERY 2.2*/
+UPDATE course
+SET title = 'Introduction to Relational Databases'
+WHERE course_id = 'CIS253'
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+Rows matched: 1  Changed: 0  Warnings: 0
+
+--------------
+/*QUERY 3*/
+SELECT 
+	s.section_id,
+	s.course_id,
+    COUNT(*)
+FROM section s
+JOIN registration r
+ON s.section_id = r.section_id
+WHERE s.section_id = 1205
+GROUP BY s.section_id, s.course_id
+--------------
+
++------------+-----------+----------+
+| section_id | course_id | COUNT(*) |
++------------+-----------+----------+
+|       1205 | AC265     |        1 |
++------------+-----------+----------+
+1 row in set (0.00 sec)
+
+--------------
+/*QUERY 4*/
+SELECT 
+	s.course_id,
+    s.section_id,
+    st.last_name,
+    st.first_name
+FROM section s
+JOIN registration r
+ON s.section_id = r.section_id 
+JOIN student st 
+ON r.student_id = st.student_id 
+JOIN faculty f 
+ON s.faculty_id = f.faculty_id
+WHERE f.name = 'Mobley'
+--------------
+
++-----------+------------+-----------+------------+
+| course_id | section_id | last_name | first_name |
++-----------+------------+-----------+------------+
+| CIS253    |       1102 | Diaz      | Jose       |
+| CIS253    |       1102 | Miliko    | Rajesh     |
+| CIS253    |       1208 | Holn      | Amir       |
+| CIS253    |       1210 | Lee       | Ho         |
+| CIS253    |       1210 | Miliko    | Rajesh     |
++-----------+------------+-----------+------------+
+5 rows in set (0.00 sec)
+
+--------------
+/*QUERY 5*/
+SELECT 
+	d.dept_name,
+    COUNT(*) tot_num_of_instructors
+FROM department d
+JOIN faculty f 
+ON d.dept_id = f.dept_id 
+GROUP BY f.dept_id
+--------------
+
++--------------------+------------------------+
+| dept_name          | tot_num_of_instructors |
++--------------------+------------------------+
+| Computer Science   |                      2 |
+| Telecommunications |                      2 |
+| Accounting         |                      2 |
+| Math and Science   |                      1 |
+| Liberal Arts       |                      1 |
+| English            |                      1 |
++--------------------+------------------------+
+6 rows in set (0.00 sec)
+
+--------------
+/*QUERY 6*/
+
+SELECT 
+	faculty_id, 
+    name, 
+    dept_id
+FROM faculty
+WHERE dept_id IN (1,3)
+--------------
+
++------------+---------+---------+
+| faculty_id | name    | dept_id |
++------------+---------+---------+
+|      63395 | Jones   |       1 |
+|      78699 | Mobley  |       1 |
+|      57180 | Sen     |       3 |
+|      97302 | Collins |       3 |
++------------+---------+---------+
+4 rows in set (0.00 sec)
+
+--------------
+/*QUERY 7*/
+
+SELECT 
+	s.course_id,
+    s.section_id,
+    f.name
+FROM section s
+JOIN faculty f
+ON s.faculty_id = f.faculty_id
+WHERE s.term_id = 
+	(SELECT 
+			term_id
+	FROM term
+    WHERE term_desc = 'WINTER 2017')
+--------------
+
++-----------+------------+---------+
+| course_id | section_id | name    |
++-----------+------------+---------+
+| AC265     |       1101 | Collins |
+| CIS253    |       1102 | Mobley  |
+| MA150     |       1103 | Rivera  |
++-----------+------------+---------+
+3 rows in set (0.00 sec)
+
+--------------
+/*QUERY 8*/
+
+SELECT 
+	s.first_name,
+    s.last_name
+FROM student s
+JOIN registration r
+ON s.student_id = r.student_id
+JOIN section sc
+ON r.section_id = sc.section_id
+WHERE sc.term_id = (SELECT 
+			term_id
+	FROM term
+    WHERE term_desc = 'SPRING 2017')
+AND r.final_grade = 'A'
+--------------
+
+Empty set (0.00 sec)
+
+--------------
+/*QUERY 9*/
+
+SELECT
+	COUNT(*) total_enrolled
+FROM registration
+WHERE section_id IN 
+	(SELECT 
+		section_id
+	FROM section
+    WHERE course_id = 'AC265')
+--------------
+
++----------------+
+| total_enrolled |
++----------------+
+|              5 |
++----------------+
+1 row in set (0.00 sec)
+
+--------------
+/*QUERY 10*/
+
+SELECT course_id, COUNT(section_id), SUM(max_count)
+FROM section
+GROUP BY course_id
+HAVING COUNT(section_id) > 1
+--------------
+
++-----------+-------------------+----------------+
+| course_id | COUNT(section_id) | SUM(max_count) |
++-----------+-------------------+----------------+
+| AC265     |                 3 |             95 |
+| CIS253    |                 4 |            165 |
++-----------+-------------------+----------------+
+2 rows in set (0.00 sec)
+
+--------------
+/*QUERY 11*/
+
+CREATE VIEW course_sections
+AS SELECT section_id, section_number
+FROM section
+WHERE course_id = (
+	SELECT 
+		course_id
+    FROM course 
+    WHERE title = 'Accounting')
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+/*QUERY 12*/
+
+SELECT 
+	s.course_id,
+    r.section_id,
+    COUNT(r.student_id)
+FROM registration r
+JOIN section s
+ON r.section_id = s.section_id
+GROUP BY r.section_id, s.course_id
+--------------
+
++-----------+------------+---------------------+
+| course_id | section_id | COUNT(r.student_id) |
++-----------+------------+---------------------+
+| LA123     |       1207 |                   3 |
+| AC101     |       1104 |                   2 |
+| CIS253    |       1209 |                   1 |
+| MA150     |       1103 |                   2 |
+| CIS253    |       1102 |                   2 |
+| CIS253    |       1208 |                   1 |
+| CIS253    |       1210 |                   2 |
+| AC265     |       1101 |                   1 |
+| AC265     |       1205 |                   1 |
+| AC265     |       1206 |                   3 |
+| EN100     |       1311 |                   2 |
++-----------+------------+---------------------+
+11 rows in set (0.00 sec)
+
+--------------
+/*QUERY 13*/
+
+SELECT 
+	s.section_id,
+    s.course_id,
+    c.title
+FROM section s
+JOIN course c
+ON s.course_id = c.course_id
+--------------
+
++------------+-----------+--------------------------------------+
+| section_id | course_id | title                                |
++------------+-----------+--------------------------------------+
+|       1104 | AC101     | Accounting                           |
+|       1101 | AC265     | Systems Analysis                     |
+|       1205 | AC265     | Systems Analysis                     |
+|       1206 | AC265     | Systems Analysis                     |
+|       1102 | CIS253    | Introduction to Relational Databases |
+|       1208 | CIS253    | Introduction to Relational Databases |
+|       1209 | CIS253    | Introduction to Relational Databases |
+|       1210 | CIS253    | Introduction to Relational Databases |
+|       1311 | EN100     | Basic English                        |
+|       1207 | LA123     | English Literature                   |
+|       1103 | MA150     | College Algebra                      |
++------------+-----------+--------------------------------------+
+11 rows in set (0.00 sec)
+
+--------------
+/*QUERY 14*/
+
+SELECT
+	section_id,
+    course_id,
+    section_number
+FROM section
+WHERE term_id =  (SELECT 
+			term_id
+	FROM term
+    WHERE term_desc = 'SPRING 2017')
+--------------
+
++------------+-----------+----------------+
+| section_id | course_id | section_number |
++------------+-----------+----------------+
+|       1205 | AC265     | 01             |
+|       1206 | AC265     | 02             |
+|       1207 | LA123     | 05             |
+|       1208 | CIS253    | 21             |
++------------+-----------+----------------+
+4 rows in set (0.00 sec)
+
+--------------
+/*QUERY 15*/
+
+SELECT
+	CONCAT(s.first_name, ' ', s.last_name) name,
+    m.major_desc
+FROM student s
+JOIN major m
+ON s.major_id = m.major_id
+--------------
+
++---------------+-----------------------+
+| name          | major_desc            |
++---------------+-----------------------+
+| Alex Rickles  | BS-Computer Science   |
+| Jose Diaz     | AAS-Accounting        |
+| Ho Lee        | BS-Telecommunications |
+| Rajesh Miliko | BS-Accounting         |
+| Kee Tyler     | BS-Computer Science   |
+| Amir Holn     | AAS-Computer Science  |
++---------------+-----------------------+
+6 rows in set (0.00 sec)
+
+mysql> notee;

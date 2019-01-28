@@ -1,0 +1,377 @@
+mysql> source /Users/yliepieshkov/Yevgen_dev/my_sql/yliepieshkov_assignment7.sql
+--------------
+/* QUERY 0*/
+
+USE bookstore
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+/* QUERY 1*/
+
+SELECT 
+	DISTINCT category_name 
+FROM category c 
+WHERE c.category_id 
+IN (
+		SELECT 
+			category_id
+		FROM product
+    )
+ORDER BY category_name
+--------------
+
++---------------+
+| category_name |
++---------------+
+| Book          |
+| CD            |
+| Computer      |
+| DVD           |
+| printer       |
+| Video         |
++---------------+
+6 rows in set (0.00 sec)
+
+--------------
+/* QUERY 2*/
+
+SELECT 
+	product_name,
+    list_price
+FROM product
+WHERE list_price > 
+			(
+				SELECT 
+					AVG(list_price)
+				FROM product
+            )
+ORDER BY list_price DESC
+--------------
+
++------------------------+------------+
+| product_name           | list_price |
++------------------------+------------+
+| HP Envy 750qe Desktop  |    2517.00 |
+| Dell Inspiron 17 5000  |    1415.00 |
+| HP Pavilion 15t Star   |    1299.00 |
+| Lenovo H50 Desktop     |    1199.00 |
+| Dell XPS 8700          |     999.00 |
+| Toshiba Satellite S55T |     989.99 |
+| HP Color LaserJet      |     599.00 |
++------------------------+------------+
+7 rows in set (0.00 sec)
+
+--------------
+/* QUERY 3*/
+
+SELECT 
+	category_name
+FROM category c 
+WHERE EXISTS 
+	(
+		SELECT 
+			category_id
+		FROM product 
+		WHERE category_id = c.category_id
+	)
+--------------
+
++---------------+
+| category_name |
++---------------+
+| Book          |
+| CD            |
+| Computer      |
+| DVD           |
+| printer       |
+| Video         |
++---------------+
+6 rows in set (0.00 sec)
+
+--------------
+/* QUERY 4*/
+
+SELECT 
+	c.email_address,
+    o.order_id,
+    oi.order_total
+FROM orders o
+JOIN 
+	(
+		SELECT 
+			email_address,
+            customer_id
+		FROM customer c 
+	) AS c
+ON o.customer_id = c.customer_id
+JOIN 
+	(
+		SELECT 
+			SUM((item_price-discount_amount)*quantity) AS order_total,
+            order_id
+		FROM orderitems
+        GROUP BY order_id
+	) AS oi
+ON o.order_id = oi.order_id
+GROUP BY email_address, order_id
+--------------
+
++-----------------------------+----------+-------------+
+| email_address               | order_id | order_total |
++-----------------------------+----------+-------------+
+| allan.sherwood@yahoo.com    |        1 |      924.30 |
+| allan.sherwood@yahoo.com    |        3 |     3306.29 |
+| barryz@gmail.com            |        2 |     1671.69 |
+| barryz@gmail.com            |       10 |      597.10 |
+| barryz@gmail.com            |       11 |      160.99 |
+| christineb@solarone.com     |        4 |     1689.76 |
+| david.goldstein@hotmail.com |        5 |     1299.00 |
+| david.goldstein@hotmail.com |        9 |      839.13 |
+| erinv@gmail.com             |        6 |     1299.00 |
+| frankwilson@sbcglobal.net   |        7 |     1305.75 |
+| gary_hernandez@yahoo.com    |        8 |       42.50 |
++-----------------------------+----------+-------------+
+11 rows in set (0.00 sec)
+
+--------------
+/* QUERY 5*/
+
+SELECT 
+	c.email_address,
+    o.order_id,
+    o.order_date
+FROM customer c
+LEFT JOIN 
+	(
+		SELECT 
+			MIN(order_id) AS order_id,
+            MIN(order_date) AS order_date,
+            customer_id
+		FROM orders 
+        GROUP BY customer_id
+	) AS o
+ON c.customer_id = o.customer_id
+--------------
+
++-----------------------------+----------+---------------------+
+| email_address               | order_id | order_date          |
++-----------------------------+----------+---------------------+
+| allan.sherwood@yahoo.com    |        1 | 2015-03-28 09:40:28 |
+| barryz@gmail.com            |        2 | 2015-03-28 11:23:20 |
+| christineb@solarone.com     |        4 | 2015-03-30 15:22:31 |
+| david.goldstein@hotmail.com |        5 | 2015-03-31 05:43:11 |
+| erinv@gmail.com             |        6 | 2015-03-31 18:37:22 |
+| frankwilson@sbcglobal.net   |        7 | 2015-04-01 23:11:12 |
+| gary_hernandez@yahoo.com    |        8 | 2015-04-02 11:26:38 |
+| heatheresway@mac.com        |     NULL | NULL                |
++-----------------------------+----------+---------------------+
+8 rows in set (0.00 sec)
+
+--------------
+/* QUERY 6*/
+
+SELECT
+	p.product_id,
+    p.product_name,
+    p.list_price
+FROM product p
+WHERE 
+	(
+		SELECT 
+        COUNT(product_id) 
+        FROM orderitems oi 
+        WHERE oi.product_id = p.product_id
+	) > 1
+--------------
+
++------------+----------------------+------------+
+| product_id | product_name         | list_price |
++------------+----------------------+------------+
+|       1234 | Dell XPS 8700        |     999.00 |
+|       2234 | Lenovo H50 Desktop   |    1199.00 |
+|       5234 | HP Pavilion 15t Star |    1299.00 |
+|      10234 | Z Files              |      49.99 |
++------------+----------------------+------------+
+4 rows in set (0.00 sec)
+
+--------------
+/* QUERY 7*/
+
+SELECT
+	c.last_name,
+    c.first_name
+FROM	customer c
+JOIN (
+		SELECT 
+			oi.item_price AS item_price,
+            o.customer_id
+        FROM orderitems oi
+        JOIN orders o
+        ON oi.order_id = o.order_id
+        ) AS ip
+ON c.customer_id = ip.customer_id
+WHERE ip.item_price > 300
+GROUP BY c.first_name, c.last_name
+--------------
+
++-----------+------------+
+| last_name | first_name |
++-----------+------------+
+| Sherwood  | Allan      |
+| Zimmer    | Barry      |
+| Brown     | Christine  |
+| Goldstein | David      |
+| Valentino | Erin       |
+| Wilson    | Frank Lee  |
++-----------+------------+
+6 rows in set (0.00 sec)
+
+--------------
+    
+    
+/* QUERY 8*/
+
+SELECT
+	c.last_name,
+    c.first_name,
+    c.email_address
+FROM customer c
+JOIN (
+		SELECT 
+			o.customer_id,
+            o.order_id 
+		FROM orders o
+        WHERE o.order_id IN (1,2,3)
+        ) as o
+ON c.customer_id = o.customer_id
+GROUP BY c.email_address
+--------------
+
++-----------+------------+--------------------------+
+| last_name | first_name | email_address            |
++-----------+------------+--------------------------+
+| Sherwood  | Allan      | allan.sherwood@yahoo.com |
+| Zimmer    | Barry      | barryz@gmail.com         |
++-----------+------------+--------------------------+
+2 rows in set (0.00 sec)
+
+--------------
+/* QUERY 9*/
+
+SELECT
+	c.last_name,
+    c.first_name,
+    c.email_address
+FROM customer c
+JOIN (
+		SELECT 
+			o.customer_id,
+            o.order_id
+		FROM orders o
+        JOIN orderitems oi
+        ON o.order_id = oi.order_id
+        JOIN product p
+        ON oi.product_id = p.product_id
+        JOIN vendor v
+        ON p.vendor_id = v.vendor_id
+        WHERE v.company_name LIKE 'H%'
+        ) as o
+ON c.customer_id = o.customer_id
+GROUP BY c.email_address
+--------------
+
++-----------+------------+-----------------------------+
+| last_name | first_name | email_address               |
++-----------+------------+-----------------------------+
+| Wilson    | Frank Lee  | frankwilson@sbcglobal.net   |
+| Zimmer    | Barry      | barryz@gmail.com            |
+| Brown     | Christine  | christineb@solarone.com     |
+| Goldstein | David      | david.goldstein@hotmail.com |
++-----------+------------+-----------------------------+
+4 rows in set (0.00 sec)
+
+--------------
+/* QUERY 10*/
+
+SELECT
+	p.product_id,
+    p.product_name,
+    p.list_price
+FROM product p
+JOIN (
+	SELECT 
+		SUM(quantity) as sum_quantity,
+        product_id
+	FROM orderitems 
+    GROUP BY product_id
+    ) oi
+ON p.product_id = oi.product_id
+WHERE p.product_id = oi.product_id
+AND sum_quantity > 2
+--------------
+
++------------+----------------------+------------+
+| product_id | product_name         | list_price |
++------------+----------------------+------------+
+|       1234 | Dell XPS 8700        |     999.00 |
+|       2234 | Lenovo H50 Desktop   |    1199.00 |
+|       5234 | HP Pavilion 15t Star |    1299.00 |
+|      10234 | Z Files              |      49.99 |
++------------+----------------------+------------+
+4 rows in set (0.00 sec)
+
+--------------
+/* QUERY 11*/
+
+SELECT 
+	order_id,
+    SUM((item_price-discount_amount) * quantity)
+FROM
+	orderitems oi
+GROUP BY order_id
+HAVING 
+	SUM((item_price-discount_amount) * quantity) 
+    > (
+		SELECT 
+			SUM((item_price-discount_amount) * quantity)
+		FROM orderitems oi
+        WHERE oi.order_id = 7
+        )
+--------------
+
++----------+----------------------------------------------+
+| order_id | SUM((item_price-discount_amount) * quantity) |
++----------+----------------------------------------------+
+|        2 |                                      1671.69 |
+|        3 |                                      3306.29 |
+|        4 |                                      1689.76 |
++----------+----------------------------------------------+
+3 rows in set (0.00 sec)
+
+--------------
+/* QUERY 12*/
+
+SELECT
+	order_id,
+    order_date,
+    ship_date
+FROM orders o
+WHERE ship_date IS NOT NULL 
+AND DATEDIFF(order_date, ship_date) = 
+		(
+			SELECT 
+				MIN(DATEDIFF(order_date, ship_date))
+			FROM orders o
+		)
+--------------
+
++----------+---------------------+---------------------+
+| order_id | order_date          | ship_date           |
++----------+---------------------+---------------------+
+|        4 | 2015-03-30 15:22:31 | 2015-04-03 16:32:21 |
++----------+---------------------+---------------------+
+1 row in set (0.00 sec)
+
+mysql> notee;

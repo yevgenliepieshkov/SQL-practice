@@ -1,0 +1,140 @@
+
+
+mysql> source /Users/yliepieshkov/Yevgen_dev/my_sql/yliepieshkov_assignment1.sql
+--------------
+/* Assignment1.sql
+   Yevgen Liepieshkov
+   CS 31A, Fall 2018 */
+
+/* Query 0 */
+SELECT user(), current_date()
+--------------
+
++----------------+----------------+
+| user()         | current_date() |
++----------------+----------------+
+| root@localhost | 2018-10-01     |
++----------------+----------------+
+1 row in set (0.00 sec)
+
+--------------
+/* Query 1 */
+CREATE DATABASE IF NOT EXISTS college
+--------------
+
+Query OK, 1 row affected (0.02 sec)
+
+Database changed
+--------------
+/* Query 2 */
+CREATE TABLE instructor (
+		emp_num int,
+		dept_code varchar(10),
+		office varchar(50),
+		degree varchar(5)
+)ENGINE = INNODB
+--------------
+
+Query OK, 0 rows affected (0.01 sec)
+
+--------------
+/* Query 3 */
+INSERT INTO instructor VALUES('103','HIST','DRE 156','Ph.D.')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO instructor VALUES('104','ENG','DRE 102','MA')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO instructor VALUES('105','ACCT','KLR 229D','Ph.D.')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO instructor VALUES('110','BIOL','AAK 160','Ph.D.')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+INSERT INTO instructor VALUES('114','ACCT','KLR 211','Ph.D.')
+--------------
+
+Query OK, 1 row affected (0.01 sec)
+
+--------------
+INSERT INTO instructor VALUES('209','CIS','KLR 333','Ph.D.')
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+/* Query 4 */
+SHOW TABLES
+--------------
+
++-------------------+
+| Tables_in_college |
++-------------------+
+| instructor        |
++-------------------+
+1 row in set (0.00 sec)
+
+--------------
+/* Query 5 */
+DESC instructor
+--------------
+
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| emp_num   | int(11)     | YES  |     | NULL    |       |
+| dept_code | varchar(10) | YES  |     | NULL    |       |
+| office    | varchar(50) | YES  |     | NULL    |       |
+| degree    | varchar(5)  | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+--------------
+/* Query 6 */
+SELECT *
+FROM instructor
+--------------
+
++---------+-----------+----------+--------+
+| emp_num | dept_code | office   | degree |
++---------+-----------+----------+--------+
+|     103 | HIST      | DRE 156  | Ph.D.  |
+|     104 | ENG       | DRE 102  | MA     |
+|     105 | ACCT      | KLR 229D | Ph.D.  |
+|     110 | BIOL      | AAK 160  | Ph.D.  |
+|     114 | ACCT      | KLR 211  | Ph.D.  |
+|     209 | CIS       | KLR 333  | Ph.D.  |
++---------+-----------+----------+--------+
+6 rows in set (0.00 sec)
+
+--------------
+/* Query 7 */
+SELECT emp_num, degree
+FROM instructor
+--------------
+
++---------+--------+
+| emp_num | degree |
++---------+--------+
+|     103 | Ph.D.  |
+|     104 | MA     |
+|     105 | Ph.D.  |
+|     110 | Ph.D.  |
+|     114 | Ph.D.  |
+|     209 | Ph.D.  |
++---------+--------+
+6 rows in set (0.00 sec)
+
+mysql> notee
